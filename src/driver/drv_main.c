@@ -528,6 +528,12 @@ static driver_t g_drivers[] = {
 	//drvdetail:"requires":""}
 	{ "UartTCP",		UART_TCP_Init,		NULL,	NULL, NULL, UART_TCP_Deinit, NULL, NULL, false }
 #endif
+#if ENABLE_DRIVER_RFREMOTE_2148AMC
+	//drvdetail:{"name":"RFREMOTE_2148AMC",
+	//drvdetail:"title":"TODO",
+	//drvdetail:"descr":"RF Remote with 1428AMc MCU support.",
+    //drvdetail:"requires":""}
+	{ "RFRemote2148", 	RFREMOTE_2148_Init,	NULL, NULL, NULL, RFREMOTE_2148_Deinit, NULL, NULL, false }
 };
 
 
