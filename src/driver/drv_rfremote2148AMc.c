@@ -18,7 +18,7 @@ void NTPSwitch_OnEverySecond() {
 
 }
 void NTPSwitch_AppendInformationToHTTPIndexPage(http_request_t* request) {
-  hprintf255(request, "<h4> is running!</h4>");
+  hprintf255(request, "<h4>RF Remote 2148Amc is running!</h4>");
 
 }
 void NTPSwitch_QuickTick() {
