@@ -18,6 +18,8 @@
 #define RF2148_CMD_UP     0x09
 #define RF2148_CMD_STOP   0x0A
 #define RFRemote2148AMC_PACKET_SIZE (3)
+
+
 const char* RFRemote2148AMc_GetCmdTypeString(int codeByte) {
 	if (codeByte == RF2148_CMD_75P)
   {
@@ -61,6 +63,7 @@ void RFRemote2148AMc_Init() {
   UART_InitUART(g_baudRate, 0, false);
   UART_InitReceiveRingBuffer(1024);
 }
+
 void RFRemote2148AMc_OnEverySecond() {
 
 }
@@ -87,63 +90,12 @@ void RFRemote2148AMc_ProcessIncoming(const byte* data, int len)
 		return;
 	} 
 
-  return RFRemote2148AMc_GetCmdTypeString(data);
+  return RFRemote2148AMc_GetCmdTypeString(data[2]);
   
 }
 
 
 
-int UART_GetRFRemote2148AMcPacket(byte* out, int maxSize) {
-	int cs;
-	int len, i;
-	int c_garbage_consumed = 0;
-	byte a, b, c;
-	char printfSkipDebug[256];
-	char buffer2[8];
-
-	printfSkipDebug[0] = 0;
-
-	cs = UART_GetDataSize();
-
-	if (cs < RFRemote2148AMC_PACKET_SIZE) {
-		return 0;
-	}
-	// skip garbage data (should not happen)
-	while (cs > 0) {
-		a = UART_GetByte(0);
-		b = UART_GetByte(1);
-		if (a != 0x55 || b != 0xA5) {
-			UART_ConsumeBytes(1);
-			if (c_garbage_consumed + 2 < sizeof(printfSkipDebug)) {
-				snprintf(buffer2, sizeof(buffer2), "%02X ", a);
-				strcat_safe(printfSkipDebug, buffer2, sizeof(printfSkipDebug));
-			}
-			c_garbage_consumed++;
-			cs--;
-		}
-		else {
-			break;
-		}
-	}
-	if (c_garbage_consumed > 0) {
-		addLogAdv(LOG_INFO, LOG_FEATURE_RFREMOTE2148AMC, "Consumed %i unwanted non-header byte in RFRemote2148Amc buffer\n", c_garbage_consumed);
-		addLogAdv(LOG_INFO, LOG_FEATURE_RFREMOTE2148AMC, "Skipped data (part) %s\n", printfSkipDebug);
-	}
-	if (cs < RFRemote2148AMC_PACKET_SIZE) {
-		return 0;
-	}
-	a = UART_GetByte(0);
-	b = UART_GetByte(1);
-	if (a != 0x55 || b != 0xA5) {
-		return 0;
-	}
-	
-	command = UART_GetByte(2);
-
-		return ret;
-	}
-	return 0;
-}
 void RFRemote2148AMc_PrintPacket(byte *data, int len) {
 	int i;
 	char buffer_for_log[256];
@@ -168,6 +120,7 @@ void RFRemote2148AMc_PrintPacket(byte *data, int len) {
 			EventHandlers_FireEvent_String(CMD_EVENT_ON_UART, buffer_for_log);
 #endif
 }
+
 void RFRemote2148AMc_RunReceive() {
 	byte data[192];
 	int len;
